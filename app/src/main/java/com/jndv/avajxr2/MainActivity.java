@@ -5,6 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.jndv.avajxr2.bean.BaseEntity;
+import com.jndv.avajxr2.bean.ChatMessageToken;
+import com.jndv.avajxr2.bean.PhoneInfo;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +34,8 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -51,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 //        mTake();
 //        mJust();
 //        mFromArray();
-        mFromIterable();
+//        mFromIterable();
 //        mSingle();
 //        mDebounce();
 //        mDefer();
@@ -59,6 +68,48 @@ public class MainActivity extends AppCompatActivity {
 //        mReduce();
 //        mScan();
 //        mWindow();
+
+        getPhoneData();
+
+        getChatMsgToken();
+    }
+
+    private void getChatMsgToken() {
+        //post参数
+        JSONObject js = new JSONObject();
+
+        try {
+            js.put("username", "lscs1");
+            js.put("passwd", "96E79218965EB72C92A549DD5A330112");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), js.toString());
+        RetrofitFactory.getInstence().getChatMsgToken(requestBody, new BaseObserver<ChatMessageToken>() {
+            @Override
+            protected void onSuccees(BaseEntity<ChatMessageToken> data) throws Exception {
+                Log.e(TAG, "onSuccees: " + data.getToken());
+            }
+
+            @Override
+            protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                Log.e(TAG, "onFailure: " + e.toString());
+            }
+        });
+    }
+
+    private void getPhoneData() {
+        RetrofitFactory.getInstence().getPhoneInfo("1351103", "790c971125", new BaseObserver<PhoneInfo>() {
+            @Override
+            protected void onSuccees(BaseEntity<PhoneInfo> data) throws Exception {
+                Log.e(TAG, "onSuccees: ");
+            }
+
+            @Override
+            protected void onFailure(Throwable e, boolean isNetWorkError) throws Exception {
+                Log.e(TAG, "onFailure: " + e.toString() + "  " + isNetWorkError);
+            }
+        });
     }
 
     //Create操作符，用于产生一个Observable被观察对象。被观察者Observable称为发射器（上游事件），观察者（Observer）称为接收器（下游事件）
